@@ -1,9 +1,13 @@
 package accounts;
+import notifier.ConsoleNotifierService;
+import notifier.NotifierService;
 import person.AccountOwner;
 
 import java.util.UUID;
 
 public abstract class BankAccount {
+
+    private NotifierService notifierService = new ConsoleNotifierService();
 
     private String accountType;
     private String uuid;

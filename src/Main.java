@@ -1,8 +1,4 @@
-import accounts.BankAccount;
-import accounts.BusinessAccount;
-import accounts.CurrentAccount;
-import accounts.SavingsAccount;
-import accounts.StudentAccount;
+import accounts.*;
 import person.AccountOwner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -25,6 +21,17 @@ void main() {
 
     BusinessAccount business = new BusinessAccount(accountOwner, "999", 1000);
     business.sub(100);
+
+   List<BankAccount> bankAccounts = new ArrayList<>();
+   bankAccounts.add(current);
+   bankAccounts.add(savings);
+
+    for (BankAccount account: bankAccounts)
+    {
+    if (account instanceof InterestPoint){
+        ((InterestPoint) account).calculateInterest();
+    }
+    }
 }
 
 void withdraw(BankAccount account, double amount) {

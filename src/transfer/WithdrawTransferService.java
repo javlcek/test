@@ -3,7 +3,7 @@ package transfer;
 import accounts.BankAccount;
 import accounts.BusinessAccount;
 
-public class TransferService {
+public class WithdrawTransferService {
     public void withdraw(BankAccount bankAccount, double amount){
         double newBalance = bankAccount.getBalance() - amount;
 
