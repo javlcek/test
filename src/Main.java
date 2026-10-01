@@ -1,43 +1,99 @@
 import accounts.*;
 import person.AccountOwner;
+import transfer.AccountTransferService;
+import transfer.DepositTransferService;
+import transfer.WithdrawTransferService;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import java.util.ArrayList;
+import java.util.List;
+
 void main() {
 
     AccountOwner accountOwner = new AccountOwner("Tomas", "Pesek");
     accountOwner.setLastName("Pokorny");
 
-    BankAccount current = new CurrentAccount(accountOwner, "123", 1000);
-    current.sub(600);
-    withdraw(current, 500);
+    BankAccount bankAccount = new CurrentAccount(accountOwner, "123", 500);
+    BankAccount studentAccount = new StudentAccount(accountOwner, "123", 500, "Delta");
+    BankAccount savingAccount = new SavingAccount(accountOwner, "123");
 
-    StudentAccount student = new StudentAccount(accountOwner, "456", 0, "CVUT");
-    student.sub(5000);
-    withdraw(student, 1);
+    List<BankAccount> bankAccounts = new ArrayList<>();
+    bankAccounts.add(bankAccount);
+    bankAccounts.add(studentAccount);
 
-    SavingsAccount savings = new SavingsAccount(accountOwner, "789", 0);
-    savings.add(10000);
-
-    BusinessAccount business = new BusinessAccount(accountOwner, "999", 1000);
-    business.sub(100);
-
-   List<BankAccount> bankAccounts = new ArrayList<>();
-   bankAccounts.add(current);
-   bankAccounts.add(savings);
-
-    for (BankAccount account: bankAccounts)
-    {
-    if (account instanceof InterestPoint){
-        ((InterestPoint) account).calculateInterest();
+    for (BankAccount account : bankAccounts) {
+        if (account instanceof InterestPoint) {
+            ((InterestPoint) account).calculateInterest();
+        }
     }
+
+    for (BankAccount account : bankAccounts) {
+
+        if (account instanceof StudentAccount) {
+            StudentAccount stdAccount = (StudentAccount) account;
+            IO.println("school: " + stdAccount.getSchoolName());
+        }
+
+        IO.println("balance: " + account.getBalance());
+
+    }
+
+    printBalance(bankAccount);
+
+    DepositTransferService depositTransferService = new DepositTransferService();
+    depositTransferService.deposit(bankAccount, 400);
+    depositTransferService.deposit(bankAccount, 100);
+    depositTransferService.deposit(bankAccount, 200);
+    depositTransferService.deposit(bankAccount, 600);
+
+    printBalance(bankAccount);
+
+    WithdrawTransferService withdrawTransferService = new WithdrawTransferService();
+
+    withdrawTransferService.withdraw(bankAccount, 300);
+    withdrawTransferService.withdraw(bankAccount, 300);
+
+    withdrawTransferService.withdraw(bankAccount, 100);
+    withdrawTransferService.withdraw(bankAccount, 50);
+    withdrawTransferService.withdraw(bankAccount, 400);
+
+    printBalance(bankAccount);
+
+    AccountTransferService accountTransferService = new AccountTransferService();
+
+    BusinessAccount businessAccount = new BusinessAccount(accountOwner, "999");
+    businessAccount.setBalance(1000);
+
+    IO.println("-- account to account transfer --");
+
+    accountTransferService.transfer(bankAccount, studentAccount, 200);
+    printAccountBalance(bankAccount, studentAccount);
+
+    accountTransferService.transfer(businessAccount, studentAccount, 300);
+    printAccountBalance(businessAccount, studentAccount);
+
+    try {
+        accountTransferService.transfer(bankAccount, studentAccount, -100);
+    } catch (IllegalArgumentException e) {
+        IO.println("chyba: " + e.getMessage());
+    }
+
+    try {
+        accountTransferService.transfer(bankAccount, bankAccount, 100);
+    } catch (IllegalArgumentException e) {
+        IO.println("chyba: " + e.getMessage());
+    }
+
+    try {
+        accountTransferService.transfer(bankAccount, studentAccount, 100000);
+    } catch (IllegalArgumentException e) {
+        IO.println("chyba: " + e.getMessage());
     }
 }
 
-void withdraw(BankAccount account, double amount) {
-    try {
-        account.sub(amount);
-    } catch (IllegalArgumentException e) {
-        IO.println("chyba");
-    }
+private void printAccountBalance(BankAccount from, BankAccount to) {
+    IO.println("from: " + from.getBalance() + ", to: " + to.getBalance());
+}
+
+private void printBalance(BankAccount bankAccount) {
+    IO.println("balance: " + bankAccount.getBalance());
 }
