@@ -1,7 +1,5 @@
 package person;
 
-import java.util.UUID;
-
 public class AccountOwner {
 
     private String uuid;
@@ -10,8 +8,8 @@ public class AccountOwner {
 
     private String lastName;
 
-    public AccountOwner(String name, String lastName) {
-        this.uuid = UUID.randomUUID().toString();
+    public AccountOwner(String uuid, String name, String lastName) {
+        this.uuid = uuid;
         this.name = name;
         this.lastName = lastName;
     }

@@ -1,5 +1,6 @@
 import accounts.*;
 import person.AccountOwner;
+import person.AccountOwnerFactory;
 import transfer.AccountTransferService;
 import transfer.DepositTransferService;
 import transfer.WithdrawTransferService;
@@ -9,12 +10,15 @@ import java.util.List;
 
 void main() {
 
-    AccountOwner accountOwner = new AccountOwner("Tomas", "Pesek");
+    AccountOwnerFactory accountOwnerFactory = new AccountOwnerFactory();
+    BankAccountFactory bankAccountFactory = new BankAccountFactory();
+
+    AccountOwner accountOwner = accountOwnerFactory.createAccountOwner("Tomas", "Pesek");
     accountOwner.setLastName("Pokorny");
 
-    BankAccount bankAccount = new CurrentAccount(accountOwner, "123", 500);
-    BankAccount studentAccount = new StudentAccount(accountOwner, "123", 500, "Delta");
-    BankAccount savingAccount = new SavingAccount(accountOwner, "123");
+    BankAccount bankAccount = bankAccountFactory.createCurrentAccount(accountOwner, "123", 500);
+    BankAccount studentAccount = bankAccountFactory.createStudentAccount(accountOwner, "123", 500, "Delta");
+    BankAccount savingAccount = bankAccountFactory.createSavingAccount(accountOwner, "123");
 
     List<BankAccount> bankAccounts = new ArrayList<>();
     bankAccounts.add(bankAccount);
@@ -60,7 +64,7 @@ void main() {
 
     AccountTransferService accountTransferService = new AccountTransferService();
 
-    BusinessAccount businessAccount = new BusinessAccount(accountOwner, "999");
+    BusinessAccount businessAccount = bankAccountFactory.createBusinessAccount(accountOwner, "999");
     businessAccount.setBalance(1000);
 
     IO.println("-- account to account transfer --");

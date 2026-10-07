@@ -4,11 +4,11 @@ import person.AccountOwner;
 
 public class CurrentAccount extends BankAccount {
 
-    public CurrentAccount(AccountOwner accountOwner, String accountNumber) {
-        super(accountOwner, accountNumber);
+    public CurrentAccount(String uuid, AccountOwner accountOwner, String accountNumber) {
+        super(uuid, accountOwner, accountNumber);
     }
 
-    public CurrentAccount(AccountOwner accountOwner, String accountNumber, double balance) {
-        super(accountOwner, accountNumber, balance);
+    public CurrentAccount(String uuid, AccountOwner accountOwner, String accountNumber, double balance) {
+        super(uuid, accountOwner, accountNumber, balance);
     }
 }
