@@ -3,6 +3,8 @@ import person.AccountOwner;
 import person.AccountOwnerFactory;
 import transfer.AccountTransferService;
 import transfer.DepositTransferService;
+import transfer.Transaction;
+import transfer.TransferLoggerService;
 import transfer.WithdrawTransferService;
 
 import java.util.ArrayList;
@@ -43,7 +45,9 @@ void main() {
 
     printBalance(bankAccount);
 
-    DepositTransferService depositTransferService = new DepositTransferService();
+    TransferLoggerService transferLoggerService = new TransferLoggerService();
+
+    DepositTransferService depositTransferService = new DepositTransferService(transferLoggerService);
     depositTransferService.deposit(bankAccount, 400);
     depositTransferService.deposit(bankAccount, 100);
     depositTransferService.deposit(bankAccount, 200);
@@ -51,7 +55,7 @@ void main() {
 
     printBalance(bankAccount);
 
-    WithdrawTransferService withdrawTransferService = new WithdrawTransferService();
+    WithdrawTransferService withdrawTransferService = new WithdrawTransferService(transferLoggerService);
 
     withdrawTransferService.withdraw(bankAccount, 300);
     withdrawTransferService.withdraw(bankAccount, 300);
@@ -62,7 +66,7 @@ void main() {
 
     printBalance(bankAccount);
 
-    AccountTransferService accountTransferService = new AccountTransferService();
+    AccountTransferService accountTransferService = new AccountTransferService(transferLoggerService);
 
     BusinessAccount businessAccount = bankAccountFactory.createBusinessAccount(accountOwner, "999");
     businessAccount.setBalance(1000);
@@ -91,6 +95,11 @@ void main() {
         accountTransferService.transfer(bankAccount, studentAccount, 100000);
     } catch (IllegalArgumentException e) {
         IO.println("chyba: " + e.getMessage());
+    }
+
+    IO.println("-- transaction history --");
+    for (Transaction transaction : transferLoggerService.getTransactions()) {
+        IO.println(transaction);
     }
 }
 
