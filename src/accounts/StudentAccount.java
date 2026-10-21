@@ -2,29 +2,14 @@ package accounts;
 
 import person.AccountOwner;
 
-public class StudentAccount extends BankAccount{
+public class StudentAccount extends BankAccount {
 
-    private String schoolName;
+    private final String schoolName;
 
-    public StudentAccount(
-            String uuid,
-            AccountOwner accountOwner,
-            String accountNumber,
-            double balance,
-            String schoolName
-    ) {
-        super(uuid, accountOwner, accountNumber, balance);
+    public StudentAccount(AccountOwner accountOwner, double balance, String schoolName) {
+        super(accountOwner, balance);
 
         this.schoolName = schoolName;
-    }
-
-    public StudentAccount(
-            String uuid,
-            AccountOwner accountOwner,
-            String accountNumber,
-            String schoolName
-    ) {
-        this(uuid, accountOwner, accountNumber, 0, schoolName);
     }
 
     public String getSchoolName() {

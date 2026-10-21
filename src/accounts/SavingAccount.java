@@ -3,10 +3,11 @@ package accounts;
 import person.AccountOwner;
 
 public class SavingAccount extends BankAccount implements InterestPoint {
-    private static final float INTEREST_RATE = 0.05f;
 
-    public SavingAccount(String uuid, AccountOwner accountOwner, String accountNumber) {
-        super(uuid, accountOwner, accountNumber);
+    private static final double INTEREST_RATE = 0.05;
+
+    public SavingAccount(AccountOwner accountOwner, double balance) {
+        super(accountOwner, balance);
     }
 
     @Override
@@ -14,6 +15,6 @@ public class SavingAccount extends BankAccount implements InterestPoint {
         double interest = getBalance() * INTEREST_RATE;
         double newBalance = getBalance() + interest;
 
-        super.setBalance(newBalance);
+        setBalance(newBalance);
     }
 }

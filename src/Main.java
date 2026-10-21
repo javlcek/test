@@ -1,53 +1,59 @@
-import accounts.*;
+import accounts.BankAccount;
+import accounts.InterestPoint;
+import accounts.StudentAccount;
+import accounts.serialization.BankAccountGsonSerializer;
+import accounts.serialization.BankAccountSerializer;
+import accounts.serialization.BankAccountXmlSerializer;
+import accounts.services.BankAccountService;
 import person.AccountOwner;
-import person.AccountOwnerFactory;
-import transfer.AccountTransferService;
+import person.services.AccountOwnerService;
 import transfer.DepositTransferService;
-import transfer.Transaction;
-import transfer.TransferLoggerService;
 import transfer.WithdrawTransferService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 void main() {
 
-    AccountOwnerFactory accountOwnerFactory = new AccountOwnerFactory();
-    BankAccountFactory bankAccountFactory = new BankAccountFactory();
+    var accountOwnerService = new AccountOwnerService();
+    var bankAccountService = new BankAccountService();
 
-    AccountOwner accountOwner = accountOwnerFactory.createAccountOwner("Tomas", "Pesek");
-    accountOwner.setLastName("Pokorny");
+    AccountOwner accountOwner = accountOwnerService.createAccountOwner("Tomas", "Pesek");
 
-    BankAccount bankAccount = bankAccountFactory.createCurrentAccount(accountOwner, "123", 500);
-    BankAccount studentAccount = bankAccountFactory.createStudentAccount(accountOwner, "123", 500, "Delta");
-    BankAccount savingAccount = bankAccountFactory.createSavingAccount(accountOwner, "123");
+    var bankAccount = bankAccountService.createCurrentBankAccount(accountOwner, 500);
+    bankAccountService.createStudentBankAccount(accountOwner, 500, "Delta");
+    bankAccountService.createSavingBankAccount(accountOwner, 500);
+    bankAccountService.createBusinessBankAccount(accountOwner, 500);
 
-    List<BankAccount> bankAccounts = new ArrayList<>();
-    bankAccounts.add(bankAccount);
-    bankAccounts.add(studentAccount);
+    BankAccountSerializer bankAccountJsonSerializer = new BankAccountGsonSerializer();
+    BankAccountSerializer bankAccountXmlSerializer = new BankAccountXmlSerializer();
 
-    for (BankAccount account : bankAccounts) {
-        if (account instanceof InterestPoint) {
-            ((InterestPoint) account).calculateInterest();
+    String bankAccountXml = bankAccountXmlSerializer.serialize(bankAccount);
+    String bankAccountXmlAll = bankAccountXmlSerializer.serializeAll(bankAccountService.getBankAccounts());
+
+    String bankAccountJson = bankAccountJsonSerializer.serialize(bankAccount);
+    String bankAccountJsonAll = bankAccountJsonSerializer.serializeAll(bankAccountService.getBankAccounts());
+
+    IO.println(bankAccountXml);
+    IO.println(bankAccountXmlAll);
+
+    IO.println(bankAccountJson);
+    IO.println(bankAccountJsonAll);
+
+    for (var account : bankAccountService.getBankAccounts()) {
+        if (account instanceof InterestPoint interestPoint) {
+            interestPoint.calculateInterest();
         }
     }
 
-    for (BankAccount account : bankAccounts) {
-
-        if (account instanceof StudentAccount) {
-            StudentAccount stdAccount = (StudentAccount) account;
-            IO.println("school: " + stdAccount.getSchoolName());
+    for (var account : bankAccountService.getBankAccounts()) {
+        if (account instanceof StudentAccount studentAccount) {
+            IO.println("school: " + studentAccount.getSchoolName());
         }
 
         IO.println("balance: " + account.getBalance());
-
     }
 
     printBalance(bankAccount);
 
-    TransferLoggerService transferLoggerService = new TransferLoggerService();
-
-    DepositTransferService depositTransferService = new DepositTransferService(transferLoggerService);
+    var depositTransferService = new DepositTransferService();
     depositTransferService.deposit(bankAccount, 400);
     depositTransferService.deposit(bankAccount, 100);
     depositTransferService.deposit(bankAccount, 200);
@@ -55,7 +61,7 @@ void main() {
 
     printBalance(bankAccount);
 
-    WithdrawTransferService withdrawTransferService = new WithdrawTransferService(transferLoggerService);
+    var withdrawTransferService = new WithdrawTransferService();
 
     withdrawTransferService.withdraw(bankAccount, 300);
     withdrawTransferService.withdraw(bankAccount, 300);
@@ -65,46 +71,6 @@ void main() {
     withdrawTransferService.withdraw(bankAccount, 400);
 
     printBalance(bankAccount);
-
-    AccountTransferService accountTransferService = new AccountTransferService(transferLoggerService);
-
-    BusinessAccount businessAccount = bankAccountFactory.createBusinessAccount(accountOwner, "999");
-    businessAccount.setBalance(1000);
-
-    IO.println("-- account to account transfer --");
-
-    accountTransferService.transfer(bankAccount, studentAccount, 200);
-    printAccountBalance(bankAccount, studentAccount);
-
-    accountTransferService.transfer(businessAccount, studentAccount, 300);
-    printAccountBalance(businessAccount, studentAccount);
-
-    try {
-        accountTransferService.transfer(bankAccount, studentAccount, -100);
-    } catch (IllegalArgumentException e) {
-        IO.println("chyba: " + e.getMessage());
-    }
-
-    try {
-        accountTransferService.transfer(bankAccount, bankAccount, 100);
-    } catch (IllegalArgumentException e) {
-        IO.println("chyba: " + e.getMessage());
-    }
-
-    try {
-        accountTransferService.transfer(bankAccount, studentAccount, 100000);
-    } catch (IllegalArgumentException e) {
-        IO.println("chyba: " + e.getMessage());
-    }
-
-    IO.println("-- transaction history --");
-    for (Transaction transaction : transferLoggerService.getTransactions()) {
-        IO.println(transaction);
-    }
-}
-
-private void printAccountBalance(BankAccount from, BankAccount to) {
-    IO.println("from: " + from.getBalance() + ", to: " + to.getBalance());
 }
 
 private void printBalance(BankAccount bankAccount) {

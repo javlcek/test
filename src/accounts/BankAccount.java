@@ -3,7 +3,6 @@ package accounts;
 // 2010
 
 import notifier.ConsoleNotifierService;
-import notifier.EmailNotifierService;
 import notifier.NotifierService;
 import person.AccountOwner;
 
@@ -12,29 +11,35 @@ public abstract class BankAccount {
 
     private String uuid;
 
-    private AccountOwner accountOwner;
+    private final AccountOwner accountOwner;
 
     private String accountNumber;
 
     private double balance;
 
-    private NotifierService notifierService = new ConsoleNotifierService();
+    private final NotifierService notifierService = new ConsoleNotifierService();
 
-    public BankAccount(String uuid, AccountOwner accountOwner, String accountNumber) {
-        this.uuid = uuid;
+    protected BankAccount(AccountOwner accountOwner) {
         this.accountOwner = accountOwner;
-        this.accountNumber = accountNumber;
         this.balance = 0;
     }
 
-    public BankAccount(String uuid, AccountOwner accountOwner, String accountNumber, double balance) {
-        this(uuid, accountOwner, accountNumber);
+    protected BankAccount(AccountOwner accountOwner, double balance) {
+        this(accountOwner);
 
         this.balance = balance;
     }
 
     public String getAccountNumber() {
         return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public double getBalance() {

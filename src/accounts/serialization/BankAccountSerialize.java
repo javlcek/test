@@ -1,4 +1,4 @@
 package accounts.serialization;
 
-public class BankAccountSerialize {
+public record BankAccountSerialize(String accountNumber) {
 }
